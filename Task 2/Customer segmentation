@@ -1,0 +1,57 @@
+# ===============================
+# 👥 Customer Segmentation Project
+# ===============================
+
+# Import Libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+# 📂 Load Dataset
+df = pd.read_csv("customers.csv")   # <-- Replace with your dataset
+print("Data Shape:", df.shape)
+df.head()
+
+# 📌 Data Cleaning
+print(df.isnull().sum())
+df = df.dropna()
+
+# ==============================
+# 🔹 Feature Selection
+# ==============================
+features = df[['Annual Income (k$)', 'Spending Score (1-100)']]  # Example features
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(features)
+
+# ==============================
+# 🔹 K-Means Clustering
+# ==============================
+kmeans = KMeans(n_clusters=4, random_state=42)
+df['Cluster'] = kmeans.fit_predict(scaled_features)
+
+# ==============================
+# 🔹 Visualization
+# ==============================
+plt.figure(figsize=(8,6))
+sns.scatterplot(x=df['Annual Income (k$)'], y=df['Spending Score (1-100)'], hue=df['Cluster'], palette="Set2")
+plt.title("Customer Segmentation")
+plt.show()
+
+# Cluster Characteristics
+print(df.groupby('Cluster').mean())
+
+# ==============================
+# 💡 Insights & Recommendations
+# ==============================
+print("""Insights:
+1. Different customer groups identified by income & spending.
+2. Some clusters show high income but low spending.
+3. Others spend a lot despite lower income.
+
+Recommendations:
+- High income & high spenders: VIP treatment, premium offers.
+- Low income & high spenders: Loyalty programs, discounts.
+- High income & low spenders: Upselling and personalized marketing.
+""")
