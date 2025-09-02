@@ -1,0 +1,64 @@
+---
+
+## 💻 Starter Code (`retail_sales_eda.ipynb`)
+
+```python
+# 📌 Import Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Display settings
+pd.set_option("display.max_columns", None)
+sns.set(style="whitegrid")
+
+# 📂 Load Dataset
+df = pd.read_csv("../data/dataset1.csv")   # replace with dataset2 if needed
+print("Data Shape:", df.shape)
+df.head()
+
+# 🔹 Data Cleaning
+print(df.info())
+print(df.isnull().sum())
+df = df.dropna()  # or use fillna() based on dataset
+
+# 🔹 Descriptive Statistics
+print(df.describe(include="all"))
+
+# 🔹 Time Series Analysis
+df['Date'] = pd.to_datetime(df['Date'])
+sales_trend = df.groupby("Date")["Sales"].sum()
+
+plt.figure(figsize=(12,6))
+plt.plot(sales_trend.index, sales_trend.values, marker="o")
+plt.title("Sales Trend Over Time")
+plt.xlabel("Date")
+plt.ylabel("Total Sales")
+plt.show()
+
+# 🔹 Customer Analysis
+top_customers = df.groupby("CustomerID")["Sales"].sum().sort_values(ascending=False).head(10)
+sns.barplot(x=top_customers.values, y=top_customers.index)
+plt.title("Top 10 Customers by Sales")
+plt.show()
+
+# 🔹 Product Analysis
+top_products = df.groupby("Product")["Sales"].sum().sort_values(ascending=False).head(10)
+sns.barplot(x=top_products.values, y=top_products.index)
+plt.title("Top 10 Products by Sales")
+plt.show()
+
+# 🔹 Correlation Heatmap
+plt.figure(figsize=(8,6))
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
+
+# 🔹 Business Recommendations (Example)
+print("""
+1. Focus marketing on top customers (loyalty programs).
+2. Stock more of the top-selling products to maximize revenue.
+3. Address seasonal sales dips by targeted promotions.
+4. Use correlation insights for cross-selling strategies.
+""")
