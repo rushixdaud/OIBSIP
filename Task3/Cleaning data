@@ -1,0 +1,56 @@
+# ===============================
+# 🧹 Data Cleaning Project
+# ===============================
+
+# Import Libraries
+import pandas as pd
+import numpy as np
+
+# 📂 Load Dataset
+df = pd.read_csv("dirty_data.csv")   # <-- Replace with your dataset
+print("Data Shape:", df.shape)
+df.head()
+
+# ==============================
+# 🔹 Handling Missing Values
+# ==============================
+print("Missing Values:\n", df.isnull().sum())
+
+# Drop rows with too many NaNs
+df = df.dropna(thresh=3)
+
+# Fill missing values
+df['Age'] = df['Age'].fillna(df['Age'].median())
+
+# ==============================
+# 🔹 Removing Duplicates
+# ==============================
+print("Before removing duplicates:", df.shape)
+df = df.drop_duplicates()
+print("After removing duplicates:", df.shape)
+
+# ==============================
+# 🔹 Standardization
+# ==============================
+df['Gender'] = df['Gender'].str.strip().str.capitalize()
+
+# ==============================
+# 🔹 Outlier Detection
+# ==============================
+Q1 = df['Age'].quantile(0.25)
+Q3 = df['Age'].quantile(0.75)
+IQR = Q3 - Q1
+outliers = df[(df['Age'] < (Q1 - 1.5*IQR)) | (df['Age'] > (Q3 + 1.5*IQR))]
+print("Outliers detected:", outliers.shape)
+
+# Remove outliers
+df = df[~df.index.isin(outliers.index)]
+
+# ==============================
+# ✅ Cleaned Data
+# ==============================
+print("Final Cleaned Dataset Shape:", df.shape)
+df.head()
+
+# Save cleaned data
+df.to_csv("cleaned_data.csv", index=False)
